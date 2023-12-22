@@ -1,0 +1,193 @@
+#include <iostream>
+#include <ncursesw/curses.h>
+
+#ifdef _WIN32 // Sprawdzenie, czy kod jest kompilowany na Windows
+#include <windows.h>
+#endif
+
+
+class Position {
+	private:
+		int X;
+		int Y;
+	public:
+		Position(int x=0, int y=0) :X(x),Y(y) {}
+		void incX(int l=1) {
+			X+=l;
+		}
+		void incY(int l=1) {
+			Y+=l;
+		}
+		int getX() {
+			return X;
+		}
+		int getY() {
+			return Y;
+		}
+};
+class Ship{
+	private:
+		Position position;
+	public:
+		virtual void shoot();
+		virtual void takeDamage();
+		print(){
+			move
+		}
+};
+class Player: public Ship {
+	private:
+		Position;
+	public:
+		void shoot() {
+			int i  = 0;
+			while(!missile.hit) {
+				missile.position(getX(), getY()+i);
+				i++;										
+			}
+	
+		};
+		void coord
+
+};
+class Missile : public Position {
+	public:
+		bool hit(){
+			if()
+		}
+};
+
+void ncurses_init_colors() {
+	// więcej o kolorach tu https://www.linuxjournal.com/content/programming-color-ncurses
+
+	// musimy ustawić jeśli będziemy używać kolorowania konsoli
+	start_color();
+	// i zdefiniować pary kolorów które będziemy używać
+	init_pair(1, COLOR_GREEN, COLOR_BLACK);
+}
+
+void ncurses_config() {
+	//dla windows nalerzy zmienic konfigurację konsoli aby klikanie myszką działało
+#ifdef _WIN32
+	{
+		HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+		DWORD mode;
+		GetConsoleMode(hStdin, &mode);
+		SetConsoleMode(hStdin, mode & ~(ENABLE_QUICK_EDIT_MODE | ENABLE_INSERT_MODE));
+	}
+#endif
+	// Włączenie obsługi myszy
+	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+	// definiujemy kolory tekstu które użyjemy do kolorowania planszy
+	ncurses_init_colors();
+	// getch ma interpretować znaki specjalne takie jak KEY_UP
+	keypad(stdscr, TRUE);
+	// ustawiamy timeout dla getch (milisekundy)
+	// po tym czasie program przejdzie dalej nawet jeśli nie podasz klawisza
+	timeout(30);
+	// podczas wpisywania z klawiatury nie powinna się drukować literka
+	noecho();
+	// ukrycie kursora
+	curs_set(0);
+}
+
+void print_board(Position position, Ship* cship) {
+	// operujemy na wirtualnym ekranie będącym buforem ekranu
+	// a następnie wyświetlamy bufor w terminalu funkcją refresh
+
+	clear(); // czyści wirtualny ekran (lepiej było by czyścić jeden znak albo jedna linie)
+
+	attron(COLOR_PAIR(1)); // ustawiamy wcześniej zdefiniowaną perę kolorów
+	// (można użyć mvaddch zamiast dwóch funcji)
+	cship = new PLayer;
+	move(cship->getX, x); // skaczemy kursorem do danej pozycji
+	addch(character); // drukujemy podany znak
+	//move(0, 0); // aby migający kursor nam nie przeszkadzał
+	attroff(COLOR_PAIR(1)); // przywracamy domyślny kolor
+
+	refresh(); // wyświetlamy zawartość wirtualnego ekranu dopiero po refresh
+}
+
+int main(void) {
+	// inicjalizacja ncurses
+	WINDOW * mainwin = initscr();
+	ncurses_config();
+
+	int last_character = '!';
+	int last_position_x = 15, last_position_y = 15;
+	int width=0, height=0;
+	bool playing = true;
+	// Główna nieskończona pętla programu
+	while(playing) {
+		// pobiera wymiary terminala
+		getmaxyx(stdscr, height, width);
+		// sczytujemy literkę z klawiatury
+		// (jeśli są tu znaki specjalne musi być int bo nie zmieszczą się w char)
+		int input = getch();
+		if(input != ERR)
+			switch(input) {
+				case KEY_UP:
+					// sprawdzamy czy nie wychodzimy poza ekran
+					if(last_position_y > 0)
+						// zmieniamy pozycje kursora
+						--last_position_y;
+					break;
+				case KEY_DOWN:
+					if(last_position_y < height-1)
+						++last_position_y;
+					break;
+				case KEY_LEFT:
+					if(last_position_x > 0)
+						--last_position_x;
+					break;
+				case KEY_RIGHT:
+					if(last_position_x < width-1)
+						++last_position_x;
+					break;
+				case KEY_MOUSE:
+					MEVENT event;
+					if (getmouse(&event) == OK) {
+
+						if (event.bstate & BUTTON1_CLICKED) {
+							last_position_x = event.x;
+							last_position_y = event.y;
+						}
+					}
+					break;
+				case KEY_SPACE:
+
+				case 'q':
+				case 'Q':
+					// wychodzimy z programu
+					playing = false;
+					break;
+				default:
+					// zmieniamy wyświetlany kursor
+					last_character = input;
+			
+			}
+			
+			cship = Player();
+			
+			vector<moveable> move;
+			for (movable m:move){
+				m.tick(move)
+			}
+			
+			
+			for (Missle m : missles){
+				m.print()
+			}
+			
+			ship.print();
+			refresh();
+		// nasza funkcja ma wyświetlić coś na ekranie na podstawie przekazanych danych
+		print_board(last_position_x, last_position_y, last_character);
+	}
+
+	// zakańczamy prace ncurses
+	delwin(mainwin);
+	endwin();
+	refresh();
+	return EXIT_SUCCESS;
+}
