@@ -5,7 +5,6 @@
 #include <windows.h>
 #endif
 #include <unistd.h>
-#include "classes.h"
 #include <vector>
 class Position {
 	private:
@@ -49,13 +48,17 @@ class Entity {
 		Position position;
 		Position barrelPos;
 		std::string fileName;
+	protected:
+		Position farRightPosition;
 	public:
-		Entity(Position posi, const std::string& fileName):position(posi), barrelPos(0,0), fileName(fileName) {
+		Entity(Position posi, const std::string& fileName):position(posi), barrelPos(0,0), fileName(fileName), farRightPosition(posi) {
 		}
 		Position& getPosition() {
 			return position;
 		}
-
+		Position& getFarRightPosition(){
+			return farRightPosition;
+		}
 		Position getBarrelPosition() const {
 			return barrelPos;
 		}
@@ -90,9 +93,10 @@ class Player : public Entity {
 		}
 };
 class Enemies : public Entity {
-		Position farRightPosition;
 	public:
-		Enemies(Position posi) : Entity(posi, "assets/enemies.txt"), farRightPosition(posi.getX() + 6, posi.getY() + 2) {}
+		Enemies(Position posi) : Entity(posi, "assets/enemies.txt") {
+		getFarRightPosition() = Position(posi.getX() + 6, posi.getY() + 2);
+		}
 		bool checkHitbox(Position missile) {
 			//if((missile.getX() > getPosition().getX()) && (missile.getX() < farRightPosition.getX()) && (missile.getY() == getPosition().getY()))
 			if( missile.getY() >= getPosition().getY() && missile.getY() <= farRightPosition.getY() && missile.getX() >= getPosition().getX() && missile.getX() <= (getPosition().getX() + 6))
@@ -100,13 +104,22 @@ class Enemies : public Entity {
 				else return 0;
 		}
 };
+bool checkHitbox(Position missile, Position entity, Position farRightPosition){
+	if( missile.getY() >= entity.getY() && missile.getY() <= farRightPosition.getY() && missile.getX() >= entity.getX() && missile.getX() <= farRightPosition.getX())
+	return 1;
+	else return 0;
+	
+}
 void checkCollision(Player& player, std::vector<Missile>& missiles, std::vector<Enemies>& enemy) {
+	std::vector<int> index;
 	for(int i = 0; i<missiles.size(); i++) {
-		//for(int j = 0; j<2; j++){
-		if(enemy.at(0).checkHitbox(missiles.at(i).getPosition())) {
+		//for(int j = 0; j<enemy.size(); j++){
+		if(checkHitbox(missiles.at(i).getPosition(), enemy.at(0).getPosition(), enemy.at(0).getFarRightPosition()) ) {
 			missiles.erase(missiles.begin() + i);
 			enemy.erase(enemy.begin());
+			//index.push_back(j);
 		//}
+	//	enemy.erase(enemy.begin());
 		}
 	}
 }
@@ -259,7 +272,7 @@ int main(void) {
 		enemy.at(i).print();
 		}
 		
-		forerror(std::to_string(missiles.size()));
+		forerror(std::to_string(input));
 		//missiles.at(0).print();
 		//previous_input = input;
 
