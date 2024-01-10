@@ -21,7 +21,7 @@ class Position {
 		int getY() const {
 			return Y;
 		}
-		int getX() const{
+		int getX() const {
 			return X;
 		}
 
@@ -56,7 +56,7 @@ class Entity {
 		Position& getPosition() {
 			return position;
 		}
-		Position& getFarRightPosition(){
+		Position& getFarRightPosition() {
 			return farRightPosition;
 		}
 		Position getBarrelPosition() const {
@@ -95,34 +95,35 @@ class Player : public Entity {
 class Enemies : public Entity {
 	public:
 		Enemies(Position posi) : Entity(posi, "assets/enemies.txt") {
-		getFarRightPosition() = Position(posi.getX() + 6, posi.getY() + 2);
-		}
-		bool checkHitbox(Position missile) {
-			//if((missile.getX() > getPosition().getX()) && (missile.getX() < farRightPosition.getX()) && (missile.getY() == getPosition().getY()))
-			if( missile.getY() >= getPosition().getY() && missile.getY() <= farRightPosition.getY() && missile.getX() >= getPosition().getX() && missile.getX() <= (getPosition().getX() + 6))
-				return 1;
-				else return 0;
+			getFarRightPosition() = Position(posi.getX() + 6, posi.getY() + 2);
 		}
 };
-bool checkHitbox(Position missile, Position entity, Position farRightPosition){
+bool checkHitbox(Position missile, Position entity, Position farRightPosition) {
 	if( missile.getY() >= entity.getY() && missile.getY() <= farRightPosition.getY() && missile.getX() >= entity.getX() && missile.getX() <= farRightPosition.getX())
-	return 1;
+		return 1;																																									//DO GAME LOGIC
 	else return 0;
-	
+
 }
 void checkCollision(Player& player, std::vector<Missile>& missiles, std::vector<Enemies>& enemy) {
-	std::vector<int> index;
-	for(int i = 0; i<missiles.size(); i++) {
-		//for(int j = 0; j<enemy.size(); j++){
-		if(checkHitbox(missiles.at(i).getPosition(), enemy.at(0).getPosition(), enemy.at(0).getFarRightPosition()) ) {
-			missiles.erase(missiles.begin() + i);
-			enemy.erase(enemy.begin());
-			//index.push_back(j);
-		//}
-	//	enemy.erase(enemy.begin());
+	int index;
+	bool hit = false;
+	for(int j = 0; j<enemy.size(); j++) {
+		for(int i = 0; i < missiles.size(); i++) {
+
+			if(checkHitbox(missiles.at(i).getPosition(), enemy.at(j).getPosition(), enemy.at(j).getFarRightPosition()) ) {									//DO GAME LOGIC
+				missiles.erase(missiles.begin() + i);
+				index = j;
+				hit = true;
+				break;
+			}
+			
 		}
+		if(hit) break;
 	}
+	if(hit)enemy.erase(enemy.begin()+index);
+	
 }
+
 
 void ncurses_init_colors() {
 	// więcej o kolorach tu https://www.linuxjournal.com/content/programming-color-ncurses
@@ -162,7 +163,7 @@ void forerror(std::string word) {
 	int i = 0;
 	//word = "";
 	while(i < word.size()) {
-		move(15, 15);
+		move(15, 15+i);
 		addch(word.at(i));
 		i++;
 	}
@@ -184,11 +185,11 @@ void print_board(int x, int y, int character) {
 
 	refresh(); // wyświetlamy zawartość wirtualnego ekranu dopiero po refresh
 }
-void generateEnemies(std::vector<Enemies>& enemy){
-	Position posi(50,10);
-	for(int i = 1; i <=4 ; i++){	
+void generateEnemies(std::vector<Enemies>& enemy) {
+	Position posi(50,10);																//DO GAMELOGIC
+	for(int i = 1; i <=4 ; i++) {
 		enemy.emplace_back(posi);
-		 posi.incX(7);
+		posi.incX(7);
 	}
 }
 
@@ -198,6 +199,8 @@ int main(void) {
 	ncurses_config();
 	Position position(50,24);
 	Player player(position);
+	//Player* player = new Player(position);
+	//delete player
 	Position enPosition(50, 10);
 	std::vector <Enemies> enemy;
 	generateEnemies(enemy);
@@ -211,9 +214,9 @@ int main(void) {
 	bool shooting = false;
 	unsigned int milisecond = 10000;
 	int enmsMvDelay = 15;
-	while(playing) {
-		getmaxyx(stdscr, height, width);
-
+		
+		while(playing){
+			getmaxyx(stdscr, height, width);
 		input = getch();
 		forerror(std::to_string(input));
 		if(input != ERR)
@@ -240,11 +243,10 @@ int main(void) {
 					// zmieniamy wyświetlany kursor
 					break;
 			};
-		clear();
+		clear();				//ZAMIAST TEGO WSZYSTKIEGO DAC TICK I ZROBIC W PETLI WSZYSTKIE ELEMENTY GRY
+		
 		checkCollision(player, missiles, enemy);
-		if(missiles.size() == 0){
-			shooting = 0;
-		}
+
 		if(shooting) {
 
 			for(int i = 0; i < missiles.size(); i++) {      //STRTZELANIE
@@ -259,20 +261,20 @@ int main(void) {
 		}
 		player.print();
 		enmsMvDelay--;
-		if(enemy.at(0).getPosition().getX() >= width-14 || enemy.at(enemy.size() - 1).getPosition().getX() < 15) {      	// ZAMIANA KIERUNKU PORUSZANIA OPONENTOW
+		if(enemy.at(0).getPosition().getX()  < 8 || enemy.at(enemy.size() - 1).getPosition().getX()>= width-14 ) {      	// ZAMIANA KIERUNKU PORUSZANIA OPONENTOW
 			direction = direction *(-1);
 		}
 
 		if(enmsMvDelay == 0) {
 			for(int i = 0; i < enemy.size(); i++)
-			enemy.at(i).getPosition().incX(direction);										// PRZECIWNICY RUSZAJA SIE CO 15 ITERACJE PĘTLI
+				enemy.at(i).getPosition().incX(direction);										// PRZECIWNICY RUSZAJA SIE CO 15 ITERACJE PĘTLI
 			enmsMvDelay = 15;
 		}
-		for(int i = 0; i < enemy.size(); i++){
-		enemy.at(i).print();
+		for(int i = 0; i < enemy.size(); i++) {
+			enemy.at(i).print();
 		}
-		
-		forerror(std::to_string(input));
+
+		forerror(std::to_string(missiles.size()));
 		//missiles.at(0).print();
 		//previous_input = input;
 
