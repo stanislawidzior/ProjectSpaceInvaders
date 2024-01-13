@@ -4,16 +4,13 @@
 #include <fstream>
 #include <ncursesw/curses.h>
 
-Entity::Entity(Position posi, const std::string& fileName):position(posi), barrelPos(0,0), fileName(fileName), farRightPosition(posi) {
+Entity::Entity(Position posi, const std::string& fileName):position(posi), fileName(fileName), farRightPosition(posi), id('n'), action(false), hitbox(posi,posi,'n', false) {
 }
 Position& Entity::getPosition() {
 	return position;
 }
 Position& Entity::getFarRightPosition() {
 	return farRightPosition;
-}
-Position Entity::getBarrelPosition() const {
-	return barrelPos;
 }
 void Entity::tick(int input, GameLogic* game) {
 }
@@ -32,8 +29,6 @@ void Entity::print() {
 		for (int i = 0; i < line.size(); i++) {
 			move(position.getY() + yOffset, position.getX() + i);
 			if (i == line.size() / 2 && yOffset == 0) {
-				barrelPos.incX(position.getX() + i);
-				barrelPos.incY(position.getY() + yOffset + 2);
 			}
 			addch(line.at(i));
 		}
@@ -41,3 +36,6 @@ void Entity::print() {
 	}
 	sprite.close();
 }
+Hitbox Entity::getHitbox(){
+	return hitbox;
+};

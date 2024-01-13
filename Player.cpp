@@ -1,15 +1,17 @@
 #include "Player.h"
 #include <ncursesw/curses.h>
 
-	Player::Player(Position posi) : Entity(posi, "assets/player.txt"), hitbox(posi,posi,' ', 0) {
+	Player::Player(Position posi) : Entity(posi, "assets/player.txt"){
 		farRightPosition = Position(posi.getX() + 13, posi.getY() + 6);
-        hitbox = Hitbox(position, farRightPosition, id, false);
+        id = 'p';
+		hitbox = Hitbox(position, farRightPosition, id, false);
+        
 		}
 
-		void Player::checkCollision(char idcol){
-			if(idcol = 'n')
+		void Player::checkCollision(char idcoliding){
+			if(idcoliding = 'n')
 			return;
-			if(idcol = 'm')
+			if(idcoliding = 'm')
 			health--;
 		}
 
@@ -23,10 +25,12 @@
 				case KEY_LEFT:
 					if(position.getX() > 0)
 						position.incX(-1);
+						farRightPosition.incX(-1);
 					break;
 				case KEY_RIGHT:
 					if(position.getX()< game->getWidth()-14)
 						position.incX(1);
+						farRightPosition.incX(1);
 					break;
 				case 'q':
 				case 'Q':
@@ -37,10 +41,11 @@
 					// zmieniamy wyświetlany kursor
 					break;
 			};
-			game->updateHitmap({position, farRightPosition, id, false});
+			hitbox.updatePosition(position,farRightPosition);
+			game->updateHitmap(hitbox);
 			checkCollision(game->checkOverlapping(id));
 			print();
-			game->printHitmap();
+			//game->printHitmap();
 	}
 	
 

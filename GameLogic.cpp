@@ -2,7 +2,7 @@
 #include <ncursesw/curses.h>
 
 
-GameLogic::GameLogic(int shootdel, int emdel, int scor, int helt) : shootingDelay(shootdel), enemyMoveDelay(emdel), score(scor), health(helt) {
+GameLogic::GameLogic(int shootdel, int emdel, int scor) : shootingDelay(shootdel), enemyMoveDelay(emdel), score(scor) {
 	getmaxyx(stdscr, height, width);
 }
 int GameLogic::getNumOfOponents() {
@@ -36,6 +36,7 @@ void GameLogic::updateHitmap(Hitbox box) {
 		if(box.getId() == hitmap.at(i).getId()) {
 			hitmap.at(i) = box;
 			found = true;
+			break;
 		}
 	}
 	if(!found) hitmap.emplace_back(box);
@@ -57,11 +58,13 @@ char GameLogic::checkOverlapping(char id) {
 }
 void GameLogic::printHitmap() {
 	for(int i = 0; i<hitmap.size(); i++) {
-		move(15,15+i);
+		move(15,15 + i);
 		addch(hitmap.at(i).getId());
 	}
+	
 }
 void GameLogic::tick() {
 	enemyMoveDelay--;
 	if(enemyMoveDelay < 0) enemyMoveDelay = 5;
+	//printHitmap();
 }

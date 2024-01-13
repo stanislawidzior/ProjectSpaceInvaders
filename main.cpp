@@ -82,7 +82,7 @@ int main(void) {
 	ncurses_config();
 	Position position(50,24);
 	Position enPosition(50, 10);
-	GameLogic* game = new GameLogic(10,15,0,3);
+	GameLogic* game = new GameLogic(10,15,0);
 	Entity* proba = new Player(position);
 	Entity* proba2 = new Enemies(enPosition);
 	//Entity* proba3 = new Missile({0,0});

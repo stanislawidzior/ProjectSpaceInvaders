@@ -9,12 +9,11 @@ class GameLogic {
 		std::vector<Hitbox> hitmap;
 		bool playing = true;
 		int score;
-		int health = 3;
 		int width;
 		int height;
 		int numberOfOponents = 6;
 	public:
-		GameLogic(int shootdel, int emdel, int scor, int helt);
+		GameLogic(int shootdel, int emdel, int scor);
 		void incScore(int x);
 		int getWidth();
 		int getHeight();
