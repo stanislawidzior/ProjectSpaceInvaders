@@ -1,6 +1,8 @@
 #include "Enemies.h"
 #include <ncursesw/curses.h>
 #include "ChildEnemy.h"
+#include <stdlib.h> 
+#include <time.h> 
 Enemies::Enemies(Position posi) : Entity(posi, "assets/enemies.txt") {
 	getFarRightPosition() = Position(posi.getX() + 6, posi.getY() + 2);
 	id = 'E';
@@ -8,25 +10,60 @@ Enemies::Enemies(Position posi) : Entity(posi, "assets/enemies.txt") {
 }
 void Enemies::changeDirection() {
 	direction = direction*(-1);
+			move(2,6);
+		addstr("zmienione");
 }
-void Enemies::spawnChilds() {
+void Enemies::spawnChilds(int amount) {
 	Position posi = farRightPosition;
-	for(int i = 0; i < 3; i++) {
+	for(int i = 0; i < amount; i++) {
 		posi.incX(7);
-		childEnemies.emplace_back(posi,i);
+		childEnemies.emplace_back(posi,'e',i);
 	}
 	spawned = true;
+}
+bool Enemies::CheckIfRespawn(){
+	for(int i = 0; i < childEnemies.size(); i++){
+		if(!childEnemies.at(i).isHit())
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 void Enemies::tick(int input, GameLogic* game) {
 	iterator++;
 	if(!spawned) {
-		spawnChilds();
+		spawnChilds(game->getNumOfOponents());
 	}
-	if(iterator == 150) {
-		changeDirection();
+	move (1,5);
+	std::string word = std::to_string(childEnemies.at(0).getPosition().getX()) + "> 2 " + std::to_string(childEnemies.at(childEnemies.size() - 1).getPosition().getX()) + "<"+std::to_string(game->getWidth() - 6 );
+	
+	addstr(word.c_str());
 
+	if(childEnemies.at(0).getPosition().getX() <= 2 || childEnemies.at(childEnemies.size() - 1).getPosition().getX() >= game->getWidth() - 6  ) {
+		if(game->getMoveDelay() == 0)
+		changeDirection();
+			move(3,6);
+	addstr(std::to_string(direction).c_str());
 	}
-	for(int i = 0; i < childEnemies.size(); i++)
+
+	if(CheckIfRespawn()){
+		for(int i = 0; i < childEnemies.size(); i++){
+			childEnemies.clear();
+			spawnChilds(game->getNumOfOponents());	
+		}
+	}
+	if(game->getShootingDelay() == 0){
+			srand(time(NULL));
+			childEnemies.at(rand() % childEnemies.size()).switchAction();
+			move(21,15);
+			addstr("przeciwnik mowi ze strzela");
+	}
+	for(int i = 0; i < childEnemies.size(); i++){
+		if(!childEnemies.at(i).isHit()){
 		childEnemies.at(i).tick(direction, game);
+	}
+	}
+		
 }

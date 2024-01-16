@@ -9,18 +9,32 @@
 		}
 
 		void Player::checkCollision(char idcoliding){
-			if(idcoliding = 'n')
+			if(idcoliding == 'n')
 			return;
-			if(idcoliding = 'm')
-			health--;
+			else if(idcoliding == 'm'){
+				health--;
+			}
+			
 		}
 
 	void Player::tick(int input, GameLogic* game){
-	move(15,15);
-	//addstr("gownogowno");
+	if(hitbox.isAction())action = false;
+	game->getUpdate(hitbox);
+	if(hitbox.isAction() == true && action == false){
+		hitbox.switchAction();
+	}
+					if(hitbox.isColiding()){
+				checkCollision(hitbox.colidingId());
+				if(health == 0) game->endGame();
+								move(21,16);
+				addstr("trafiony");
+				hitbox.switchColiding();
+				}
 	switch(input) {
+
 				case 32:
-					
+					hitbox.switchAction();
+					action = true;
 					break;
 				case KEY_LEFT:
 					if(position.getX() > 0)
@@ -42,10 +56,10 @@
 					break;
 			};
 			hitbox.updatePosition(position,farRightPosition);
-			game->updateHitmap(hitbox);
-			checkCollision(game->checkOverlapping(id));
+			game->updateHitmap(hitbox, true);
 			print();
-			//game->printHitmap();
+			move(2,game->getWidth() - 6);
+			addstr(std::to_string(health).c_str());
 	}
 	
 

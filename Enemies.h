@@ -12,6 +12,6 @@ class Enemies : public Entity {
 		Enemies(Position posi);
 		void changeDirection();
 		void tick(int input, GameLogic* game) override;
-		void spawnChilds();
-
+		void spawnChilds(int amount);
+		bool CheckIfRespawn();
 };

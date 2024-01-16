@@ -30,10 +30,14 @@ int GameLogic::getMoveDelay () {
 	return enemyMoveDelay;
 }
 
-void GameLogic::updateHitmap(Hitbox box) {
+void GameLogic::updateHitmap(Hitbox &box, bool replace = true) {
+	if(!replace){ 
+	hitmap.emplace_back(box);
+	return;
+	}
 	bool found = false;
 	for(int i  = 0; i < hitmap.size(); i++) {
-		if(box.getId() == hitmap.at(i).getId()) {
+		if(box.getId() == hitmap.at(i).getId() && box.getCount() == hitmap.at(i).getCount()) {
 			hitmap.at(i) = box;
 			found = true;
 			break;
@@ -41,30 +45,93 @@ void GameLogic::updateHitmap(Hitbox box) {
 	}
 	if(!found) hitmap.emplace_back(box);
 }
-char GameLogic::checkOverlapping(char id) {
-	for(int i = 0; i <hitmap.size(); i++) {
-
-		if(id == hitmap.at(i).getId()) {
-			for(int j = 0; j < hitmap.size(); j++) {
-				if(j!=i) {
-					if(hitmap.at(i).hitBoxCompare(hitmap.at(j)))
-						return hitmap.at(j).getId();
-				}
-			}
-			return 'n';
+void GameLogic::getUpdate(Hitbox& box) {
+	for(int i  = 0; i < hitmap.size(); i++) {
+		if(box.getId() == hitmap.at(i).getId() && box.getCount() == hitmap.at(i).getCount()) {
+			box = hitmap.at(i);
+			return;
 		}
-	}
-
-}
-void GameLogic::printHitmap() {
-	for(int i = 0; i<hitmap.size(); i++) {
-		move(15,15 + i);
-		addch(hitmap.at(i).getId());
 	}
 	
 }
-void GameLogic::tick() {
-	enemyMoveDelay--;
-	if(enemyMoveDelay < 0) enemyMoveDelay = 5;
-	//printHitmap();
+char GameLogic::checkOverlapping(char id, int countt) {
+    for(int i = 0; i < hitmap.size(); i++) {
+    	if(hitmap.at(i).getStatus() == false)
+    	continue;
+        if(id == hitmap.at(i).getId() && countt == hitmap.at(i).getCount()) {
+            for(int j = 0; j < hitmap.size(); j++) {
+            	if(hitmap.at(j).getStatus() == false)
+            	continue;
+                if(j != i) {
+                    if(hitmap.at(i).hitBoxCompare(hitmap.at(j))) {	
+						hitmap.at(i).switchColiding();
+                        hitmap.at(i).setColidingId(hitmap.at(j).getId());
+                        hitmap.at(j).switchColiding();
+                        hitmap.at(j).setColidingId(hitmap.at(i).getId());
+                        return hitmap.at(j).getId();
+                    }
+                }
+            }
+            return 'n';
+        }
+    }
+    return 'n';
 }
+void GameLogic::destroythem() {
+    std::vector<Hitbox> tempHitmap;
+    for (int i = 0; i < hitmap.size(); i++) {
+        if (!hitmap.at(i).wantsDestroyed()) {
+            tempHitmap.push_back(hitmap.at(i));
+        }
+    }
+    hitmap = tempHitmap;
+}
+void GameLogic::printHitmap() {
+	std::string word;
+	for(int i = 0; i<hitmap.size(); i++) {
+		if(hitmap.at(i).getStatus()){
+		move(15-i,15);
+		word = hitmap.at(i).getId() + std::to_string(hitmap.at(i).getCount()) + " ";
+		addstr(word.c_str());
+		}
+		
+	}
+	
+}
+void GameLogic::printUi(){
+	move (1,1);
+	addstr(std::to_string(score).c_str());
+		move (1,width - 5);
+	addstr(std::to_string(3).c_str());
+}
+	int GameLogic::getShootingDelay(){
+		return shootingDelay;
+	}
+void GameLogic::tick() {
+	destroythem();
+	enemyMoveDelay--;
+	shootingDelay--;
+	if(shootingDelay < 0) shootingDelay = 20;
+	if(enemyMoveDelay < 0) enemyMoveDelay = 5;
+	checkOverlapping('p', 0);
+	for(int i = 0; i < numberOfOponents; i++){
+			checkOverlapping('e', i);
+	}
+	printHitmap();
+	printUi();
+
+}
+std::vector<Hitbox> GameLogic::findAction(){
+	std::vector<Hitbox> activatedHitbox;
+	for(int i = 0; i<hitmap.size(); i++){
+		if(hitmap.at(i).isAction()){
+		 	activatedHitbox.push_back(hitmap.at(i));
+		}
+		
+	}
+	return activatedHitbox;
+}
+bool GameLogic::isplaying(){
+	return playing;
+}
+

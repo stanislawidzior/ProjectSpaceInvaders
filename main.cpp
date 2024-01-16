@@ -41,7 +41,7 @@ void ncurses_config() {
 	keypad(stdscr, TRUE);
 	// ustawiamy timeout dla getch (milisekundy)
 	// po tym czasie program przejdzie dalej nawet jeśli nie podasz klawisza
-	timeout(10);
+	timeout(30);
 	// podczas wpisywania z klawiatury nie powinna się drukować literka
 	noecho();
 	//nodelay(stdscr, TRUE);
@@ -81,11 +81,11 @@ int main(void) {
 	WINDOW * mainwin = initscr();
 	ncurses_config();
 	Position position(50,24);
-	Position enPosition(50, 10);
-	GameLogic* game = new GameLogic(10,15,0);
+	Position enPosition(1, 4 );
+	GameLogic* game = new GameLogic(20,5,0);
 	Entity* proba = new Player(position);
 	Entity* proba2 = new Enemies(enPosition);
-	//Entity* proba3 = new Missile({0,0});
+	Entity* proba3 = new Missile({0,0});
 	int direction = -1;
 	int input = 0;
 	int width=0, height=0;
@@ -93,32 +93,56 @@ int main(void) {
 
 	while(playing) {
 		input = getch();
-		clear();	
-			move(15,15);
-	//addstr("gownogowno");
-			proba->tick(input, game);
-			proba2->tick(input, game);
-			game->tick();
+		clear();
+		proba->tick(input, game);
+		proba2->tick(input, game);
+		proba3->tick(input, game);
+		game->tick();
+		if(game->isplaying() == false) {
+			clear();
+			move(15, 15);
+			addstr("GAME OVER \n gramy dalej? \ny/n");
+			while(true){
+			
+			input = getch();
+			if(input == 'y') {
+				delete proba;
+				delete proba2;
+				delete proba3;
+				delete game;
+				GameLogic* game = new GameLogic(20,5,0);
+				Entity* proba = new Player(position);
+				Entity* proba2 = new Enemies(enPosition);
+				Entity* proba3 = new Missile({0,0});
+				playing = true;
+				break;
+			}
+			else if(input == 'n'){
+			playing = false;
+			break;
+			}
+		}
+	}
 	
 
-	//
-				//ZAMIAST TEGO WSZYSTKIEGO DAC TICK I ZROBIC W PETLI WSZYSTKIE ELEMENTY GRY
+		//
+		//ZAMIAST TEGO WSZYSTKIEGO DAC TICK I ZROBIC W PETLI WSZYSTKIE ELEMENTY GRY
 
 
 
 
-	//forerror(std::to_string(missiles.size()));
-	//missiles.at(0).print();
-	//previous_input = input;
+		//forerror(std::to_string(missiles.size()));
+		//missiles.at(0).print();
+		//previous_input = input;
 
-	//input = 0;
-	refresh();
+		//input = 0;
+		refresh();
 
-}
+	}
 
 // zakańczamy prace ncurses
-delwin(mainwin);
-endwin();
-refresh();
-return EXIT_SUCCESS;
+	delwin(mainwin);
+	endwin();
+	refresh();
+	return EXIT_SUCCESS;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include "Position.h"
 #include "Hitbox.h"
 class GameLogic {
@@ -11,7 +12,8 @@ class GameLogic {
 		int score;
 		int width;
 		int height;
-		int numberOfOponents = 6;
+		int numberOfOponents = 8;
+		std::vector<int> destroy;
 	public:
 		GameLogic(int shootdel, int emdel, int scor);
 		void incScore(int x);
@@ -21,10 +23,15 @@ class GameLogic {
 		int getScore();
 		int getNumOfOponents();
 		void setShootingDelay(int x);
+		int getShootingDelay();
 		int getMoveDelay();
-		std::vector<Position> getHitmap();
-		void updateHitmap(Hitbox box);
-		char checkOverlapping(char id);
+		void updateHitmap(Hitbox &box, bool replace);
+		char checkOverlapping(char id, int countt);
 		void printHitmap();
 		void tick();
+		std::vector<Hitbox> findAction();
+		void destroythem();
+		void getUpdate(Hitbox& box);
+		void printUi();
+		bool isplaying();
 };

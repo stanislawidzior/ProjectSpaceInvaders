@@ -8,6 +8,12 @@ bool Hitbox::isAction() {
 char Hitbox::getId() {
 	return id;
 }
+void Hitbox::setCount(int i){
+	count = i;
+}
+		int Hitbox::getCount(){
+			return count;
+		}
 void Hitbox::updatePosition(Position posi, Position rposi) {
 	position = posi;
 	farRightPosition = rposi;
@@ -24,6 +30,12 @@ int Hitbox::topLeftX() {
 int Hitbox::topLeftY() {
 	return position.getY();
 }
+Position Hitbox::topMid () {
+	return Position(((bottomRightX() - topLeftX()) / 2) + topLeftX(), topLeftY() - 1);
+}
+Position Hitbox::bottomMid () {
+	return Position(((bottomRightX() - topLeftX()) / 2) + topLeftX(), bottomRightY() + 1);
+}
 bool Hitbox::hitBoxCompare(Hitbox compareMe) {
 	if (compareMe.bottomRightX() < topLeftX() || bottomRightX() < compareMe.topLeftX()) {
 		return false;
@@ -35,3 +47,31 @@ bool Hitbox::hitBoxCompare(Hitbox compareMe) {
 
 	return true;
 }
+char Hitbox::colidingId() {
+	return colidingid;
+}
+void Hitbox::setColidingId(char idd) {
+	colidingid = idd;
+}
+void Hitbox::switchColiding() {
+	coliding = !coliding;
+}
+bool Hitbox::isColiding() {
+	return coliding;
+}
+void Hitbox::switchAction(){
+	action = !action;
+}
+void	Hitbox::destroyMe(){
+	destroy = true;
+	}
+	bool Hitbox::wantsDestroyed(){
+		return destroy;
+	}
+	
+			void Hitbox::switchStatus(){
+				isActive = !isActive;
+			}
+		bool Hitbox::getStatus(){
+			return isActive;
+		}
