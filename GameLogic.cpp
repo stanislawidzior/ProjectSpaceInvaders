@@ -4,6 +4,8 @@
 
 GameLogic::GameLogic(int shootdel, int emdel, int scor) : shootingDelay(shootdel), enemyMoveDelay(emdel), score(scor) {
 	getmaxyx(stdscr, height, width);
+	shootingDelayStart = shootdel;
+	enemyMoveDelayStart = emdel;
 }
 int GameLogic::getNumOfOponents() {
 	return numberOfOponents;
@@ -100,9 +102,8 @@ void GameLogic::printHitmap() {
 }
 void GameLogic::printUi(){
 	move (1,1);
-	addstr(std::to_string(score).c_str());
-		move (1,width - 5);
-	addstr(std::to_string(3).c_str());
+	std::string word = " SCORE: " + std::to_string(score);
+	addstr(word.c_str());
 }
 	int GameLogic::getShootingDelay(){
 		return shootingDelay;
@@ -111,13 +112,13 @@ void GameLogic::tick() {
 	destroythem();
 	enemyMoveDelay--;
 	shootingDelay--;
-	if(shootingDelay < 0) shootingDelay = 20;
-	if(enemyMoveDelay < 0) enemyMoveDelay = 5;
+	if(shootingDelay < 0) shootingDelay = shootingDelayStart;
+	if(enemyMoveDelay < 0) enemyMoveDelay = enemyMoveDelayStart;
 	checkOverlapping('p', 0);
 	for(int i = 0; i < numberOfOponents; i++){
 			checkOverlapping('e', i);
 	}
-	printHitmap();
+	//printHitmap();
 	printUi();
 
 }
@@ -133,5 +134,10 @@ std::vector<Hitbox> GameLogic::findAction(){
 }
 bool GameLogic::isplaying(){
 	return playing;
+}
+void GameLogic::incShootDelay(int i){
+	if(shootingDelayStart > 1)shootingDelayStart += i;
+	else return;
+	
 }
 

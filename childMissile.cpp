@@ -9,7 +9,7 @@ childMissile::childMissile(Position posi, char idd,int coun, int directio) : Mis
 }
 void childMissile::tick(int input, GameLogic* game){
 	game->getUpdate(hitbox);
-	if( position.getY() <= 0 || position.getY() > game->getHeight()){
+	if( position.getY() <= 0 || position.getY() > game->getHeight() - 3){
 		destroy = true;
 		hitbox.destroyMe();
 			}

@@ -7,6 +7,9 @@ class GameLogic {
 	protected:
 		int shootingDelay;
 		int enemyMoveDelay ;
+		int shootingDelayStart;
+		int enemyMoveDelayStart;
+		int iterator;
 		std::vector<Hitbox> hitmap;
 		bool playing = true;
 		int score;
@@ -34,4 +37,5 @@ class GameLogic {
 		void getUpdate(Hitbox& box);
 		void printUi();
 		bool isplaying();
+		void incShootDelay(int i);
 };

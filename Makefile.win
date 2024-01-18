@@ -1,0 +1,55 @@
+# Project: Project1
+# Makefile created by Embarcadero Dev-C++ 6.3
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = main.o ChildEnemy.o childMissile.o Enemies.o Entity.o GameLogic.o Hitbox.o Missile.o Player.o Position.o
+LINKOBJ  = main.o ChildEnemy.o childMissile.o Enemies.o Entity.o GameLogic.o Hitbox.o Missile.o Player.o Position.o
+LIBS     = -L"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/lib" -L"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/x86_64-w64-mingw32/lib" -static-libgcc -lncursesw
+INCS     = -I"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/include" -I"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
+CXXINCS  = -I"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/include" -I"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Users/stani/Downloads/Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++"
+BIN      = Project1.exe
+CXXFLAGS = $(CXXINCS) 
+CFLAGS   = $(INCS) 
+DEL      = C:\Users\stani\Downloads\Embarcadero_Dev-Cpp_6.3_TDM-GCC_9.2_ncursesw_64_Portable\devcpp.exe INTERNAL_DEL
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${DEL} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+ChildEnemy.o: ChildEnemy.cpp
+	$(CPP) -c ChildEnemy.cpp -o ChildEnemy.o $(CXXFLAGS)
+
+childMissile.o: childMissile.cpp
+	$(CPP) -c childMissile.cpp -o childMissile.o $(CXXFLAGS)
+
+Enemies.o: Enemies.cpp
+	$(CPP) -c Enemies.cpp -o Enemies.o $(CXXFLAGS)
+
+Entity.o: Entity.cpp
+	$(CPP) -c Entity.cpp -o Entity.o $(CXXFLAGS)
+
+GameLogic.o: GameLogic.cpp
+	$(CPP) -c GameLogic.cpp -o GameLogic.o $(CXXFLAGS)
+
+Hitbox.o: Hitbox.cpp
+	$(CPP) -c Hitbox.cpp -o Hitbox.o $(CXXFLAGS)
+
+Missile.o: Missile.cpp
+	$(CPP) -c Missile.cpp -o Missile.o $(CXXFLAGS)
+
+Player.o: Player.cpp
+	$(CPP) -c Player.cpp -o Player.o $(CXXFLAGS)
+
+Position.o: Position.cpp
+	$(CPP) -c Position.cpp -o Position.o $(CXXFLAGS)

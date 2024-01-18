@@ -41,38 +41,12 @@ void ncurses_config() {
 	keypad(stdscr, TRUE);
 	// ustawiamy timeout dla getch (milisekundy)
 	// po tym czasie program przejdzie dalej nawet jeśli nie podasz klawisza
-	timeout(30);
+	timeout(20);
 	// podczas wpisywania z klawiatury nie powinna się drukować literka
 	noecho();
 	//nodelay(stdscr, TRUE);
 	// ukrycie kursora
 	curs_set(0);
-}
-void forerror(std::string word) {
-	int i = 0;
-	//word = "";
-	while(i < word.size()) {
-		move(15, 15+i);
-		addch(word.at(i));
-		i++;
-	}
-
-}
-
-void print_board(int x, int y, int character) {
-	// operujemy na wirtualnym ekranie będącym buforem ekranu
-	// a następnie wyświetlamy bufor w terminalu funkcją refresh
-
-	clear(); // czyści wirtualny ekran (lepiej było by czyścić jeden znak albo jedna linie)
-
-	attron(COLOR_PAIR(1)); // ustawiamy wcześniej zdefiniowaną perę kolorów
-	// (można użyć mvaddch zamiast dwóch funcji)
-	move(y, x); // skaczemy kursorem do danej pozycji
-	addch(character); // drukujemy podany znak
-	//move(0, 0); // aby migający kursor nam nie przeszkadzał
-	attroff(COLOR_PAIR(1)); // przywracamy domyślny kolor
-
-	refresh(); // wyświetlamy zawartość wirtualnego ekranu dopiero po refresh
 }
 
 
@@ -81,61 +55,49 @@ int main(void) {
 	WINDOW * mainwin = initscr();
 	ncurses_config();
 	Position position(50,24);
-	Position enPosition(1, 4 );
+	Position enPosition(0, 0 );
 	GameLogic* game = new GameLogic(20,5,0);
-	Entity* proba = new Player(position);
-	Entity* proba2 = new Enemies(enPosition);
-	Entity* proba3 = new Missile({0,0});
-	int direction = -1;
+	std::vector<Entity*> entity;
+	entity.emplace_back( new Player(position));
+	entity.emplace_back(new Enemies(enPosition));
+	entity.emplace_back(new Missile({0,0}));
 	int input = 0;
-	int width=0, height=0;
 	bool playing = true;
 
 	while(playing) {
 		input = getch();
 		clear();
-		proba->tick(input, game);
-		proba2->tick(input, game);
-		proba3->tick(input, game);
+		for(int i = 0; i< entity.size(); i++)
+			entity.at(i)->tick(input, game);
 		game->tick();
 		if(game->isplaying() == false) {
 			clear();
-			move(15, 15);
-			addstr("GAME OVER \n gramy dalej? \ny/n");
-			while(true){
+			std::string word = "YOUR SCORE: " + std::to_string(game->getScore()) +  "\n play again y/n";
+			move(game->getHeight()/2, 1);
+			addstr(word.c_str());
 			
-			input = getch();
-			if(input == 'y') {
-				delete proba;
-				delete proba2;
-				delete proba3;
-				delete game;
-				GameLogic* game = new GameLogic(20,5,0);
-				Entity* proba = new Player(position);
-				Entity* proba2 = new Enemies(enPosition);
-				Entity* proba3 = new Missile({0,0});
-				playing = true;
-				break;
-			}
-			else if(input == 'n'){
-			playing = false;
-			break;
+			while(true) {
+
+				input = getch();
+				if(input == 'y') {
+					for(int i = 0; i<entity.size(); i++)
+					delete entity.at(i);
+					delete game;
+					entity.at(0) = new Player(position);
+					entity.at(1) = new Enemies(enPosition);
+					entity.at(2)= new Missile({0,0});
+					game = new GameLogic(20, 5, 0);
+					break;
+				} else if(input == 'n') {
+					playing = false;
+					break;
+				}
 			}
 		}
-	}
-	
-
-		//
-		//ZAMIAST TEGO WSZYSTKIEGO DAC TICK I ZROBIC W PETLI WSZYSTKIE ELEMENTY GRY
 
 
 
 
-		//forerror(std::to_string(missiles.size()));
-		//missiles.at(0).print();
-		//previous_input = input;
-
-		//input = 0;
 		refresh();
 
 	}

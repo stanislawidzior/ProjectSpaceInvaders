@@ -24,8 +24,6 @@ void Missile::tick(int input, GameLogic* game) {
 		if(activatedHitbox.at(i).getId() == 'p') {
 			missiles.emplace_back(activatedHitbox.at(i).topMid(), 'm', iterator, 1);
 		} else if (activatedHitbox.at(i).getId() == 'e'){
-							move(22,15);
-			addstr("missile wie ze  przeciwnik strzelil");
 			missiles.emplace_back(activatedHitbox.at(i).bottomMid(), 'm', iterator, -1);
 		}
 	}

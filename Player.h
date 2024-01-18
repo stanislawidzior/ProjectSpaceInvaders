@@ -8,5 +8,5 @@ class Player : public Entity {
 		Player(Position posi);
 		void tick(int input, GameLogic* game) override;
 		void checkCollision(char id);
-
+		void printHealth(int width);
 	};

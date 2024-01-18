@@ -16,7 +16,14 @@
 			}
 			
 		}
-
+	void Player::printHealth(int width){
+		std::string word;
+		for(int i = 0; i < health; i++){
+		  	word += "<3 ";
+		}
+		move(1,width - 10);
+		addstr(word.c_str());
+	}
 	void Player::tick(int input, GameLogic* game){
 	if(hitbox.isAction())action = false;
 	game->getUpdate(hitbox);
@@ -26,8 +33,6 @@
 					if(hitbox.isColiding()){
 				checkCollision(hitbox.colidingId());
 				if(health == 0) game->endGame();
-								move(21,16);
-				addstr("trafiony");
 				hitbox.switchColiding();
 				}
 	switch(input) {
@@ -58,8 +63,9 @@
 			hitbox.updatePosition(position,farRightPosition);
 			game->updateHitmap(hitbox, true);
 			print();
+			printHealth(game->getWidth());
 			move(2,game->getWidth() - 6);
-			addstr(std::to_string(health).c_str());
+			//addstr(std::to_string(health).c_str());
 	}
 	
 

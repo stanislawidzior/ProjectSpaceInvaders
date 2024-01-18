@@ -19,22 +19,20 @@ void ChildEnemy::checkCollision(char idcoliding){
 		
 }
 void ChildEnemy::tick(int input, GameLogic* game){
-
+	if(!hit){
+	
 	if(!justrespawned)game->getUpdate(hitbox);
 	else justrespawned = false;
 	if(action){
 		hitbox.switchAction();
 	}
 	if(game->getShootingDelay()!=0 && hitbox.isAction()){
-			move(21,15);
-			addstr("przeciwnik mowi juz nie strzela");
 		action = false;
 		hitbox.switchAction();
 	}
 	if(hitbox.isColiding()){
 		checkCollision(hitbox.colidingId());
-		move(19,16);
-		addch(hitbox.colidingId());
+
 		hitbox.switchColiding();
 		game->incScore(1);
 		hitbox.switchStatus();
@@ -42,15 +40,16 @@ void ChildEnemy::tick(int input, GameLogic* game){
 		game->updateHitmap(hitbox,true);
 		return;
 	}
+}
 	if(game->getMoveDelay() == 0){	
-			move(4,6);
-	addstr(std::to_string(input).c_str());
+			
 		position.incX(input*1);
 		farRightPosition.incX(input*1);
 		hitbox.updatePosition(position,farRightPosition);
 	}
 
 		game->updateHitmap(hitbox,true);
+		if(hit == false)
 		print();
 }
 
